@@ -1,0 +1,78 @@
+# Dep[loy Using Ansible]
+
++--------------------+    +--------------------+     +--------------------+
+| Beachhead          |    | Controller         |     | Node-1             |
+| bchd               |    |                    |     |                    |
+|                    |    |                    |     |                    |
+|                    |    |                    |     |                    |
++--------------------+    +--------------------+     +--------------------+
+
+                                                     +--------------------+
+                                                     | Node-2             |
+                                                     |                    |
+                                                     |                    |
+                                                     |                    |
+                                                     +--------------------+
+
+
+
+fping -A controller  node-1 node-2 
+
+cd ~/git/kubernetes-the-alta3-way
+
+ansible-playbook main.yml
+
+PLAY [bootstrap] ************************************************************************************
+
+TASK [Gathering Facts] ******************************************************************************
+ok: [controller]
+ok: [node-1]
+ok: [node-2]
+
+TASK [bootstrap : raw apt update 1] *****************************************************************
+changed: [controller]
+
+
+cd ~
+
+kubectl get nodes
+
+NAME     STATUS   ROLES    AGE    VERSION
+node-1   Ready    <none>   133m   v1.23
+node-2   Ready    <none>   133m   v1.23
+
+
+kubectl describe nodes
+
+echo 'source <(kubectl completion bash)' >> ~/.bashrc
+source ~/.bashrc
+
+batcat ~/mycode/yaml/my_first_pod.yaml
+
+POD CODE
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myfirstpod
+spec:
+  containers:
+  - name: webster
+    image: registry.gitlab.com/alta3research/webby:latest
+
+
+kubectl apply -f ~/mycode/yaml/my_first_pod.yaml
+
+kubectl wait --for condition=Ready --timeout 30s pod/myfirstpod
+
+kubectl get pods
+
+NAME         READY   STATUS    RESTARTS   AGE
+myfirstpod   1/1     Running   0          19s
+
+
+kubectl delete -f ~/mycode/yaml/my_first_pod.yaml
+
+
+
+
